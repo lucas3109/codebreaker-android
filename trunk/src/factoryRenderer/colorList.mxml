@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true">
+	
+	<fx:Script>
+		<![CDATA[
+			public var colorArr2:Array = [
+				{Orange:"#ff7800",hexO:"0xFF7800"},
+				{Yellow:"#f1e022",hexY:"0xF1E022"},
+				{Blue:"#1465eb",hexB:"0x1465EB"},
+				{Green:"#46a811",hexG:"0x46A811"},
+				{Pink:"#ff4889",hexP:"0xff4889"},
+				{Brown:"#58421f",hexBr:"0x58421f"}
+			];
+			import mx.graphics.SolidColor;
+			import mx.graphics.Stroke;
+			
+			public var myUINT;
+			// Write String to labelDisplay component. 
+			public function coloring():void 
+			{ 
+				
+				var datas = tag.text;
+				
+				switch(datas)
+				{
+					case 'Orange':
+						myUINT =  colorArr2[0].Orange;
+						this.setStyle("color",colorArr2[0].Orange);
+						break;
+					case 'Yellow':
+						myUINT =  colorArr2[1].Yellow;
+						this.setStyle("color",colorArr2[1].Yellow);
+						break;
+					case 'Blue':
+						myUINT = colorArr2[2].Blue;
+						this.setStyle("color",colorArr2[2].Blue);
+						break;
+					case 'Green':
+						myUINT =  colorArr2[3].Green;
+						this.setStyle("color",colorArr2[3].Green);
+						break;
+					case "Pink":
+						myUINT = colorArr2[4].Pink;
+						this.setStyle("color",colorArr2[4].Pink);
+						break;
+					case "Brown":
+						myUINT = colorArr2[5].Brown;
+						this.setStyle("color",colorArr2[5].Brown);
+						break;
+				}
+			}
+				
+				public function getColor(d,simple=false)
+				{
+					if (simple)
+					{
+						switch(d)
+						{
+							case 'Orange':
+								myUINT =  colorArr2[0].hexO;
+								break;
+							case 'Yellow':
+								myUINT =  colorArr2[1].hexY;
+								break;
+							case 'Blue':
+								myUINT = colorArr2[2].hexB;
+								break;
+							case 'Green':
+								myUINT =  colorArr2[3].hexG;
+								break;
+							case 'Pink':
+								myUINT = colorArr2[4].hexP;
+								break;
+							case 'Brown':
+								myUINT = colorArr2[5].hexBr;
+						}
+					}
+					else
+					{
+						switch(d[0])
+						{
+							case 'Orange':
+								myUINT =  colorArr2[0].hexO;
+								break;
+							case 'Yellow':
+								myUINT =  colorArr2[1].hexY;
+								break;
+							case 'Blue':
+								myUINT = colorArr2[2].hexB;
+								break;
+							case 'Green':
+								myUINT =  colorArr2[3].hexG;
+								break;
+							case 'Pink':
+								myUINT = colorArr2[4].hexP;
+								break;
+							case 'Brown':
+								myUINT = colorArr2[5].hexBr;
+						}
+					}
+					var solid:SolidColor = new SolidColor(myUINT);
+					return solid;
+				}
+				
+				
+			public function buildColors(d)
+			{
+				bballs.fill = getColor(d,true);
+				bballs.stroke = new Stroke(0x000000,1);
+			}
+			/*
+			var p:Ellipse = new Ellipse();
+			//p.title = new String(data);
+			p.stroke = new Stroke(0x000000,1);
+			p.height = 50;
+			p.width = 50;
+			*/
+			
+			public function doubleClicked(evt:Event)
+			{
+				parentDocument.parentDocument.addElem(evt)
+			}
+		]]>
+	</fx:Script>
+	<s:HGroup  textAlign="center" verticalAlign="middle" height="60" horizontalAlign="center" width="100%" doubleClick="parentDocument.parentDocument.addElem(event,data)" doubleClickEnabled="true">
+		
+		<s:Ellipse id="bballs" height="50" width="50" />			
+		<s:Label id="tag" visible="false" includeInLayout="false" text="{data}" creationComplete="coloring();buildColors(data);bballs.addEventListener(MouseEvent.DOUBLE_CLICK,doubleClicked);" 
+				 doubleClickEnabled="true" doubleClick="parentDocument.parentDocument.addElem(event)" toolTip="Drag/Double Click me into the Board..." fontSize="18" initialize="coloring()"/>
+	
+	</s:HGroup>
+	<mx:Spacer height="20"/>
+	
+	
+	
+	
+	
+</s:ItemRenderer>
