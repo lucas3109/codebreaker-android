@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" applicationComplete="scale();AI();realInit();nowShow();initApp();" height="610" width="480" skinClass="skinz.appSkin">
+	<fx:Style source="CodeBreaker.css"/>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:ArrayList id="arr1">
+			<fx:String>Orange</fx:String>
+			<fx:String>Yellow</fx:String>
+			<fx:String>Blue</fx:String>
+			<fx:String>Green</fx:String>
+			<fx:String>Pink</fx:String>
+			<fx:String>Brown</fx:String>
+		</s:ArrayList>
+		
+	</fx:Declarations>
+	
+	<fx:Script source="factoryRenderer/GlowFilter.as"/>
+	<fx:Script source="dbActions/dbScoresMain.as"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import dot.popUps.menuPOP;
+			
+			import flash.events.KeyboardEvent;
+			import flash.ui.Keyboard;
+			
+			import mx.controls.Alert;
+			import mx.controls.VRule;
+			import mx.events.CloseEvent;
+			import mx.graphics.SolidColor;
+			import mx.graphics.Stroke;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			
+			import skinz.appBack;
+			
+			import spark.primitives.Ellipse;
+			
+			[Bindable]
+			private var pop:menuPOP;
+			
+			public function popUp()
+			{
+				pop=PopUpManager.createPopUp(this, dot.popUps.menuPOP, true) as dot.popUps.menuPOP;
+				pop.dataDG = dataDG;
+				PopUpManager.centerPopUp(pop);
+			}
+			
+			public function scale()
+			{
+				stage.align = StageAlign.TOP_LEFT;
+				stage.scaleMode = StageScaleMode.NO_SCALE;
+				super.width = 480;
+				super.height = 800;
+			}
+			
+			
+			var myUINT;
+			var counter=-1;
+			public var elementArr = new Array();
+			public var enabledBoard;
+			public var colorArr:Array = 
+				[
+					{Orange:"#ff7800",hexO:0xFF7800},
+					{Yellow:"#f1e022",hexY:0xF1E022},
+					{Blue:"#1465eb",hexB:0x1465EB},
+					{Green:"#46a811",hexG:0x46A811},
+					{Pink:"#ff4889",hexP:0xff4889},
+					{Brown:"#58421f",hexBr:0x58421f}
+				];
+			
+			
+			public function initApp():void
+			{
+				
+				this.stage.addEventListener(KeyboardEvent.KEY_DOWN,downHandler);
+				
+			}
+			 
+			
+			public function downHandler(event:KeyboardEvent):void{
+			//	var back = Keyboard.BACK;
+				//Alert.show(event.keyCode+"--"+event.charCode+"--");
+				switch (event.keyCode) 
+				{
+					case "Back":
+						event.preventDefault();
+						break;
+					case "Seatrch":
+						//do action related to SEARCH key
+						break;
+					case 16777234:
+						popUp();
+						break;
+					default:
+						break;
+				}
+			}
+			
+			
+			
+			public function getColor(d,simple=false)
+			{
+				if (simple)
+				{
+					switch(d)
+					{
+						case 'Orange':
+							myUINT =  colorArr[0].hexO;
+							break;
+						case 'Yellow':
+							myUINT =  colorArr[1].hexY;
+							break;
+						case 'Blue':
+							myUINT = colorArr[2].hexB;
+							break;
+						case 'Green':
+							myUINT =  colorArr[3].hexG;
+							break;
+						case 'Pink':
+							myUINT = colorArr[4].hexP;
+							break;
+						case 'Brown':
+							myUINT = colorArr[5].hexBr;
+					}
+				}
+				else
+				{
+					switch(d[0])
+					{
+						case 'Orange':
+							myUINT =  colorArr[0].hexO;
+							break;
+						case 'Yellow':
+							myUINT =  colorArr[1].hexY;
+							break;
+						case 'Blue':
+							myUINT = colorArr[2].hexB;
+							break;
+						case 'Green':
+							myUINT =  colorArr[3].hexG;
+							break;
+						case 'Pink':
+							myUINT = colorArr[4].hexP;
+							break;
+						case 'Brown':
+							myUINT = colorArr[5].hexBr;
+					}
+				}
+				var solid:SolidColor = new SolidColor(myUINT);
+				return solid;
+			}
+			
+			
+			public function checkPositioning(p,d,parent,simple=false)
+			{
+				if(counter<4)
+				{
+					if(simple)
+					{
+						PlayArr[counter] = {Color:d};
+						elementArr[counter] = {Element:p,ID:p.id};
+						parent.addElement(p);
+					}
+					else
+					{
+						PlayArr[counter] = {Color:d[0]};
+						elementArr[counter] = {Element:p,ID:p.id};
+						parent.addElement(p);
+					}
+				}
+				else
+				{}
+			}
+			
+			function removeLast()
+			{
+				if(counter>4)counter=4;
+				if(counter<0){counter=-1;Alert.show("No more colors...");}
+				else
+				{
+					enabledBoard[maxTries].Board.removeElementAt(counter);
+					counter--;
+				}
+			}
+			
+			
+			////////////////////////////////// A.I ////////////////////////////////////////////////////////////////////////////
+			public var AITable = new Array();
+			var PlayArr = new Array();
+			
+			public function AI()
+			{
+				for (var i=0;i<4;i++)
+				{
+					var calculus = new Date().getUTCMilliseconds();
+					var random = Math.round(Math.random()*new Date().getUTCMilliseconds()+42);
+					
+					var prod = Math.floor(calculus+random);
+					var mod = Math.round(prod%7+i);
+					while(mod>5)
+					{
+						calculus = new Date().getUTCMilliseconds();
+						random = Math.round(Math.random()*new Date().getUTCSeconds()+42);
+						prod = Math.floor(calculus+random);
+						mod = Math.round(prod%7);
+					}
+					
+					if(mod<6)
+					{
+						AITable.push(mod);
+					}
+				}
+				
+				productionQueue();
+			}
+			
+			public function productionQueue()
+			{
+				for (var i=0;i<4;i++)
+				{
+					var p:Ellipse = new Ellipse();
+					//p.title = new String(data);
+					p.stroke = new Stroke(0x000000,1);
+					p.height = 25;
+					p.width = 25;
+					//p.setStyle("color","black");
+					p.fill = this.getColor(num2String(AITable[i]),true);
+					ai.addElement(p);
+					FinalArr.push({Position:i,Color:num2String(AITable[i])});
+					
+				}
+				//? why here
+				enabledBoard = 
+					[
+						{Board:board,Pos:0},
+						{Board:board2,Pos:1},
+						{Board:board3,Pos:2},
+						{Board:board4,Pos:3},
+						{Board:board5,Pos:4}
+					];
+				
+			}
+			
+			function num2String(d)
+			{
+				switch(d)
+				{
+					case 0:
+						return "Orange";
+						break;
+					case 1:
+						return "Yellow";
+						break;
+					case 2:
+						return "Blue";
+						break;
+					case 3:
+						return "Green";
+						break;
+					case 4:
+						return "Pink";
+						break;
+					case 5:
+						return "Brown";
+						break;
+				}
+			}
+			
+			function string2Num(d)
+			{
+				switch(d)
+				{
+					case 'Orange':
+						return 0;
+						break;
+					case 'Yellow':
+						return 1;
+						break;
+					case 'Blue':
+						return 2;
+						break;
+					case 'Green':
+						return 3;
+						break;
+					case 'Pink':
+						return 4;
+						break;
+					case 'Brown':
+						return 5;
+						break;
+				}
+			}
+			
+			
+			////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//								RESULT FUNCTIONS													  //
+			////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			public var FinalArr = new Array();
+			var ResultArr = new Array();
+			var maxTries = 0;
+			var PosCheck = false;
+			var successCount = 0;
+			var keepColor = new Array();
+			var keepPos = new Array();
+			var keepNull = new Array();
+			
+			public function checkResult()
+			{
+				if(PlayArr.length<4){Alert.show("More Colors are needed... Place 5 Colors in any order.");}
+				else
+				{
+					if(maxTries>4)
+					{
+						Alert.show("GAME OVER...","",Alert.OK,null,closeSuccess);
+					}
+					else
+					{
+						
+						
+						for(var i=0;i<4;i++)
+						{
+							PosCheck = true;
+							for(var j=0;j<4;j++)
+							{
+								//Color check
+								//trace(PlayArr[i].Color+":::"+FinalArr[i].Color);
+								if(String(PlayArr[i].Color)==String(FinalArr[j].Color))
+								{
+									
+									if(PlayArr[i].Color == FinalArr[i].Color)
+									{
+										keepPos[i] = {Color:true,Position:true};
+									}
+									else
+										keepColor[i] = {Color:true,Position:false};
+									
+									break;
+								}
+								else
+								{
+									keepNull[i] = {Color:false,Position:false}
+									
+								}
+							}
+						}
+						
+						
+						feedBack();
+						if(successCount==4)
+						{
+							Alert.show("Victory!","Success...",Alert.OK|Alert.NONMODAL,null,closeSuccess);
+							shade.visible = false;
+							
+						}
+						else
+						{
+							maxTries++;
+							enabledBoard[maxTries-1].Board.enabled = false;
+							maxTries<5?enabledBoard[maxTries].Board.enabled = true:Alert.show("GAME OVER...","",Alert.OK|Alert.NONMODAL,null,closeFail);;
+							PlayArr = [];
+							counter = -1;
+							successCount = 0;
+							for(var i=0;i<4;i++)
+							{
+								keepPos.pop();
+								keepColor.pop();
+								keepNull.pop();
+							}
+							
+						}
+					}
+				}
+			}
+			
+			public function feedBack()
+			{
+				var totalCounter=0;
+				if(keepPos.length>0||keepColor.length>0)
+				{
+					var sp:Spacer = new Spacer();
+					sp.width = 5;
+					var sep:VRule = new VRule();
+					sep.percentHeight = 100;
+					sep.width = 1.0;
+					sep.setStyle("themeColor","#FFFFFF");
+					enabledBoard[maxTries].Board.addElement(sp);
+					enabledBoard[maxTries].Board.addElement(sep);
+				}
+				for each(var f in keepPos)
+				{
+					if(totalCounter<5)
+					{
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 12;
+						p.width =  12;
+						p.fill = new SolidColor(0x000000);
+						//elementArr[i].Element.filters = getFilter(setGlowFilter(0x35fa51),"Glow");
+						enabledBoard[maxTries].Board.addElement(p);
+						successCount++;
+					}
+				}
+				for each(var c in keepColor)
+				{
+					if(totalCounter<5)
+					{
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,5);
+						p.height = 12;
+						p.width = 12;
+						p.fill = new SolidColor(0xffffff);
+						enabledBoard[maxTries].Board.addElement(p);
+					}
+				}
+				
+			}
+			
+			public function closeSuccess(evt:Event)
+			{
+				LastGameLost = false;
+				saveScores();
+				shade.visible = false;
+				Alert.show("Start New Game?","New Game...",Alert.YES|Alert.NO|Alert.NONMODAL,null,endGame);
+			}
+			
+			public function closeFail(evt:Event)
+			{
+				LastGameLost = true;
+				saveScores();
+				shade.visible = false;
+				Alert.show("Start New Game?","New Game...",Alert.YES|Alert.NO|Alert.NONMODAL,null,endGame);
+			}
+			
+			public function endGame(evt:CloseEvent)
+			{
+				if(evt.detail==Alert.YES)
+				{NewGame();}
+				else
+				{}
+			}
+			
+			public var filterArray = new Array();
+			public function getFilter(fn,id)
+			{
+				filterArray[id] = fn[0];
+				//trace(filterArray[id]);
+				return [filterArray[id]];
+			}
+			
+			
+			public function addElem(evt:Event,dat)
+			{
+				counter++;
+				var data:Object = dat;
+				var p:Ellipse = new Ellipse();
+				//p.title = new String(data);
+				p.stroke = new Stroke(0x000000,1);
+				p.height = 20;
+				p.width = 20;
+				p.id = "pawn"+counter;
+				//p.setStyle("color","black");
+				p.fill = this.getColor(data,true);
+				checkPositioning(p,data,enabledBoard[maxTries].Board,true);
+			}
+			
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			//                                   NEW GAME                                               //
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			public function NewGame()
+			{
+				ai.removeAllElements();
+				shade.visible=true;
+				
+				
+				for(var i=0;i<5;i++)
+				{
+					FinalArr.pop();
+					FinalArr = new Array();
+					AITable.pop();
+					AITable = new Array();
+					PlayArr.pop();
+					keepPos.pop();
+					keepColor.pop();
+					keepNull.pop();
+					//removeLast();
+					enabledBoard[i].Board.removeAllElements();
+					enabledBoard[i].Board.setStyle("backgroundColor","#4d4d4d");
+					i==0?enabledBoard[i].Board.enabled = true:enabledBoard[i].Board.enabled = false;
+				}
+				
+				successCount = 0;
+				maxTries = 0;
+				counter = -1;
+				AI();
+			}
+			
+			public function Reset()
+			{
+				Alert.show("Are you sure you want to reset your stats?","Reset...",Alert.YES|Alert.NO,null,checkReset);
+			}
+			
+			public function checkReset(evt:CloseEvent)
+			{
+				if(evt.detail==Alert.YES)
+					deleteNow(true);
+				else
+				{}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Panel id="ai" title="A.I Panel" enabled="false" top="10" width="100%" left="110" right="10" height="90">
+		<s:layout>
+			<s:HorizontalLayout gap="10" verticalAlign="middle" paddingBottom="5" paddingTop="5" paddingRight="10"/>
+		</s:layout>
+		
+	</s:Panel>
+	
+	<mx:Canvas id="shade" top="35" width="100%" left="110" backgroundColor="#1e1e1e" visible="true" height="70" right="10">
+		<s:Label color="#ffffff" fontSize="18" textAlign="center" verticalAlign="middle" verticalCenter="0" horizontalCenter="0" text="A.I is Set!"/>	
+	</mx:Canvas>
+	
+	<s:HGroup width="100%" height="100%" gap="10" paddingTop="10" paddingLeft="10" paddingRight="10" paddingBottom="10">
+		
+		
+		<s:Panel title="Color Pawns" height="100%" color="0x000000" borderAlpha="0.15" textAlign="center" useHandCursor="true" y="5" width="100" backgroundAlpha="0.0">
+			<s:layout>
+				<s:VerticalLayout verticalAlign="top" paddingTop="10" gap="10" horizontalAlign="center"/>
+			</s:layout>
+			
+			<s:Button id="cheat" label="Reveal A.I" visible="true" includeInLayout="false" click="popUp();shade.visible=!shade.visible;shade.visible==true?cheat.label='Reveal A.I':cheat.label='Hide A.I';" width="100" height="20"/>
+			<mx:Spacer height="5"/>
+			<mx:Spacer height="33"/>
+			<s:List id="lst" height="370" textAlign="center" doubleClickEnabled="true"  dragEnabled="true" color="0x000000" dataProvider="{arr1}"  width="100%" itemRenderer="factoryRenderer.colorList" borderAlpha="0.0" contentBackgroundAlpha="0.0"/>
+			
+			
+		
+		</s:Panel>
+		
+		
+		
+	</s:HGroup>
+	
+	<s:VGroup height="100%" width="100%" left="110" top="110" right="10">
+		
+		
+		<s:Group width="100%" left="150" right="10" top="120" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-5" id="board5" width="100%" height="100%" enabled="false">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board5);
+						
+					</s:dragDrop>
+					
+					
+				</s:Panel>
+			</s:HGroup>	
+		</s:Group>	
+		
+		<s:Group width="100%" bottom="450" left="150" right="10" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-4" id="board4" width="100%" height="100%" enabled="false">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board4);
+						
+					</s:dragDrop>
+				</s:Panel>
+			</s:HGroup>	
+		</s:Group>	
+		
+		<s:Group width="100%" bottom="320" left="150" right="10" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-3" id="board3" width="100%" height="100%" enabled="false">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board3);
+						
+					</s:dragDrop>
+				</s:Panel>
+			</s:HGroup>	
+		</s:Group>	
+		
+		<s:Group width="100%" bottom="190" left="150" right="10" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-2" id="board2" width="100%" height="100%" enabled="false">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board2);
+						
+					</s:dragDrop>
+				</s:Panel>
+			</s:HGroup>	
+		</s:Group>	
+		
+		<s:Group width="100%" bottom="55" left="150" right="10" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-1" id="board" width="100%" height="100%">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board);
+						
+					</s:dragDrop>
+				</s:Panel>
+			</s:HGroup>	
+			
+		</s:Group>	
+		
+		<s:HGroup width="100%" gap="15" paddingLeft="5" horizontalAlign="left" height="50" verticalAlign="middle">
+			<mx:Button icon="@Embed(source='assets/Delete_s.png')" click="removeLast()" toolTip="Remove last placed color" width="67" height="40"/>
+			<mx:Spacer width="50"/>
+			<mx:Button id="check" icon="@Embed(source='assets/done_s.png')" click="checkResult()" fontSize="14" toolTip="Compute Color Combination" width="85" height="40"/>
+			<mx:Spacer width="40"/>
+			<s:Button label="?" toolTip="Help..." width="55" click="Alert.show('Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n','Help...')" height="100%"/>
+		</s:HGroup>
+	</s:VGroup>
+</s:Application>
