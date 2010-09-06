@@ -534,7 +534,7 @@
 				<s:VerticalLayout verticalAlign="top" paddingTop="10" gap="10" horizontalAlign="center"/>
 			</s:layout>
 			
-			<s:Button id="cheat" label="Reveal A.I" visible="true" includeInLayout="false" click="popUp();shade.visible=!shade.visible;shade.visible==true?cheat.label='Reveal A.I':cheat.label='Hide A.I';" width="100" height="20"/>
+			<s:Button id="cheat" label="Reveal A.I" visible="false" includeInLayout="false" click="popUp();shade.visible=!shade.visible;shade.visible==true?cheat.label='Reveal A.I':cheat.label='Hide A.I';" width="100" height="20"/>
 			<mx:Spacer height="5"/>
 			<mx:Spacer height="33"/>
 			<s:List id="lst" height="370" textAlign="center" doubleClickEnabled="true"  dragEnabled="true" color="0x000000" dataProvider="{arr1}"  width="100%" itemRenderer="factoryRenderer.colorList" borderAlpha="0.0" contentBackgroundAlpha="0.0"/>
