@@ -235,11 +235,13 @@
 				//? why here
 				enabledBoard = 
 					[
-						{Board:board,Pos:0},
-						{Board:board2,Pos:1},
-						{Board:board3,Pos:2},
-						{Board:board4,Pos:3},
-						{Board:board5,Pos:4}
+						{Board:board0,Pos:0},
+						{Board:board,Pos:1},
+						{Board:board2,Pos:2},
+						{Board:board3,Pos:3},
+						{Board:board4,Pos:4},
+						{Board:board5,Pos:5}
+						
 					];
 				
 			}
@@ -313,7 +315,7 @@
 				if(PlayArr.length<4){Alert.show("More Colors are needed... Place 5 Colors in any order.");}
 				else
 				{
-					if(maxTries>4)
+					if(maxTries>5)
 					{
 						Alert.show("GAME OVER...","",Alert.OK,null,closeSuccess);
 					}
@@ -360,7 +362,7 @@
 						{
 							maxTries++;
 							enabledBoard[maxTries-1].Board.enabled = false;
-							maxTries<5?enabledBoard[maxTries].Board.enabled = true:Alert.show("GAME OVER...","",Alert.OK|Alert.NONMODAL,null,closeFail);;
+							maxTries<6?enabledBoard[maxTries].Board.enabled = true:Alert.show("GAME OVER...","",Alert.OK|Alert.NONMODAL,null,closeFail);;
 							PlayArr = [];
 							counter = -1;
 							successCount = 0;
@@ -537,7 +539,7 @@
 			<s:Button id="cheat" label="Reveal A.I" visible="false" includeInLayout="false" click="popUp();shade.visible=!shade.visible;shade.visible==true?cheat.label='Reveal A.I':cheat.label='Hide A.I';" width="100" height="20"/>
 			<mx:Spacer height="5"/>
 			<mx:Spacer height="33"/>
-			<s:List id="lst" height="370" textAlign="center" doubleClickEnabled="true"  dragEnabled="true" color="0x000000" dataProvider="{arr1}"  width="100%" itemRenderer="factoryRenderer.colorList" borderAlpha="0.0" contentBackgroundAlpha="0.0"/>
+			<s:List id="lst" height="100%" textAlign="center" doubleClickEnabled="true" creationComplete="{lst.scroller.setStyle('verticalScrollPolicy', 'ScrollPolicy.OFF');}" dragEnabled="true" color="0x000000" dataProvider="{arr1}"  width="100%" itemRenderer="factoryRenderer.colorList" borderAlpha="0.0" contentBackgroundAlpha="0.0"/>
 			
 			
 		
@@ -709,7 +711,7 @@
 			<s:HGroup width="100%" height="80" gap="10" bottom="0">
 				
 				
-				<s:Panel title="Board-1" id="board" width="100%" height="100%">
+				<s:Panel title="Board-1" id="board" width="100%" height="100%" enabled="false">
 					<s:layout >
 						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
 					</s:layout>
@@ -742,6 +744,45 @@
 			</s:HGroup>	
 			
 		</s:Group>	
+		
+		<s:Group width="100%" bottom="55" left="150" right="10" height="80">
+			
+			<s:HGroup width="100%" height="80" gap="10" bottom="0">
+				
+				
+				<s:Panel title="Board-0" id="board0" width="100%" height="100%">
+					<s:layout >
+						<s:HorizontalLayout verticalAlign="middle" paddingBottom="5" paddingTop="2" paddingLeft="2" paddingRight="2"  />
+					</s:layout>
+					<s:dragEnter>
+						if (event.dragSource.hasFormat('itemsByIndex'))
+						{
+						
+						var dropTarget:Panel = event.currentTarget as Panel;
+						DragManager.acceptDragDrop(dropTarget);
+						}
+					</s:dragEnter>
+					<s:dragOver>
+						
+					</s:dragOver>
+					<s:dragDrop>
+						counter++;
+						var data:Object = event.dragSource.dataForFormat('itemsByIndex');
+						var p:Ellipse = new Ellipse();
+						//p.title = new String(data);
+						p.stroke = new Stroke(0x000000,1);
+						p.height = 20;
+						p.width = 20;
+						p.id = "pawn"+counter;
+						//p.setStyle("color","black");
+						p.fill = this.getColor(data);
+						checkPositioning(p,data,board0);
+						
+					</s:dragDrop>
+				</s:Panel>
+			</s:HGroup>	
+			
+		</s:Group>
 		
 		<s:HGroup width="100%" gap="15" paddingLeft="5" horizontalAlign="left" height="50" verticalAlign="middle">
 			<mx:Button icon="@Embed(source='assets/Delete_s.png')" click="removeLast()" toolTip="Remove last placed color" width="67" height="40"/>

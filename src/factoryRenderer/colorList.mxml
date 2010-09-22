@@ -123,9 +123,10 @@
 			{
 				parentDocument.parentDocument.addElem(evt)
 			}
+			
 		]]>
 	</fx:Script>
-	<s:HGroup  textAlign="center" verticalAlign="middle" height="60" horizontalAlign="center" width="100%" doubleClick="parentDocument.parentDocument.addElem(event,data)" doubleClickEnabled="true">
+	<s:HGroup  textAlign="center" verticalAlign="middle" height="70" horizontalAlign="center" width="100%" doubleClick="parentDocument.parentDocument.addElem(event,data)" doubleClickEnabled="true">
 		
 		<s:Ellipse id="bballs" height="50" width="50" />			
 		<s:Label id="tag" visible="false" includeInLayout="false" text="{data}" creationComplete="coloring();buildColors(data);bballs.addEventListener(MouseEvent.DOUBLE_CLICK,doubleClicked);" 
