@@ -38,6 +38,7 @@
 			
 			import spark.primitives.Ellipse;
 			
+			
 			[Bindable]
 			private var pop:menuPOP;
 			
@@ -54,9 +55,9 @@
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				super.width = 480;
 				super.height = 800;
-			}
+			}  
 			
-			
+			     
 			var myUINT;
 			var counter=-1;
 			public var elementArr = new Array();
@@ -81,15 +82,18 @@
 			 
 			
 			public function downHandler(event:KeyboardEvent):void{
-			//	var back = Keyboard.BACK;
+				var srch = event.keyCode;
+				
 				//Alert.show(event.keyCode+"--"+event.charCode+"--");
+				
 				switch (event.keyCode) 
 				{
 					case "Back":
 						event.preventDefault();
 						break;
-					case "Seatrch":
+					case Keyboard.SEARCH:
 						//do action related to SEARCH key
+						Alert.show('Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n','Help...');
 						break;
 					case 16777234:
 						popUp();
@@ -479,8 +483,7 @@
 				ai.removeAllElements();
 				shade.visible=true;
 				
-				
-				for(var i=0;i<5;i++)
+				for(var i=0;i<6;i++)
 				{
 					FinalArr.pop();
 					FinalArr = new Array();
@@ -492,7 +495,7 @@
 					keepNull.pop();
 					//removeLast();
 					enabledBoard[i].Board.removeAllElements();
-					enabledBoard[i].Board.setStyle("backgroundColor","#4d4d4d");
+					//enabledBoard[i].Board.setStyle("backgroundColor","#4d4d4d");
 					i==0?enabledBoard[i].Board.enabled = true:enabledBoard[i].Board.enabled = false;
 				}
 				
@@ -789,7 +792,7 @@
 			<mx:Spacer width="50"/>
 			<mx:Button id="check" icon="@Embed(source='assets/done_s.png')" click="checkResult()" fontSize="14" toolTip="Compute Color Combination" width="85" height="40"/>
 			<mx:Spacer width="40"/>
-			<s:Button label="?" toolTip="Help..." width="55" click="Alert.show('Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n','Help...')" height="100%"/>
+			<s:Button visible="false" label="?" toolTip="Help..." width="55" click="Alert.show('Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n','Help...')" height="100%"/>
 		</s:HGroup>
 	</s:VGroup>
 </s:Application>
