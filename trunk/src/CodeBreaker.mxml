@@ -29,6 +29,7 @@
 			import mx.controls.Alert;
 			import mx.controls.VRule;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.graphics.SolidColor;
 			import mx.graphics.Stroke;
 			import mx.managers.DragManager;
@@ -75,9 +76,7 @@
 			
 			public function initApp():void
 			{
-				
-				this.stage.addEventListener(KeyboardEvent.KEY_DOWN,downHandler);
-				
+				this.stage.addEventListener(KeyboardEvent.KEY_DOWN,downHandler);	
 			}
 			 
 			
@@ -316,7 +315,7 @@
 			
 			public function checkResult()
 			{
-				if(PlayArr.length<4){Alert.show("More Colors are needed... Place 5 Colors in any order.");}
+				if(PlayArr.length<4){Alert.show("More Colors are needed... Place 4 Colors in any order.");}
 				else
 				{
 					if(maxTries>5)
@@ -505,18 +504,7 @@
 				AI();
 			}
 			
-			public function Reset()
-			{
-				Alert.show("Are you sure you want to reset your stats?","Reset...",Alert.YES|Alert.NO,null,checkReset);
-			}
 			
-			public function checkReset(evt:CloseEvent)
-			{
-				if(evt.detail==Alert.YES)
-					deleteNow(true);
-				else
-				{}
-			}
 		]]>
 	</fx:Script>
 	

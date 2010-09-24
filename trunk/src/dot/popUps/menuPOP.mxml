@@ -14,9 +14,10 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.managers.PopUpManager;
-			import mx.events.CloseEvent;
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			
 			[Bindable]public var dataDG;
 			
@@ -42,11 +43,15 @@
 			
 			public function checkReset(evt:CloseEvent)
 			{
+				//dg.addEventListener(FlexEvent.DATA_CHANGE,reset);
 				if(evt.detail==Alert.YES)
-					parentDocument.parentDocument.deleteNow(true);
+				{parentDocument.parentDocument.deleteNow(true);
+					dg.dataProvider=parentDocument.parentDocument.dataDG;
+				}
 				else
 				{}
 			}
+			
 			
 		]]>
 	</fx:Script>
