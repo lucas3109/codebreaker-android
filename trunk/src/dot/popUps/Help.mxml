@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="90%" height="250" title="Help..." backgroundColor="#3B3838">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+				var STR = 'Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n';
+			import mx.managers.PopUpManager;
+			private function titleWindow_close():void 
+			{
+				endDiag();           	
+			}
+			public function endDiag():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:Text selectable="false" text="{STR}" fontSize="18" fontWeight="bold" color="#FFFFFF" horizontalCenter="0" top="10" width="480" height="80%" paddingLeft="10" paddingRight="10"/>
+	
+	<s:Button label="OK" height="40"  width="80"  bottom="10" horizontalCenter="0" fontWeight="bold" mouseDown="titleWindow_close()"/>
+</s:TitleWindow>
