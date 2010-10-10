@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" width="300" height="350" color="#F3F1F1" creationComplete="init();" close="titleWindow_close();" backgroundColor="#3B3838">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="350" color="#F3F1F1" creationComplete="init();" close="titleWindow_close();" backgroundColor="#3B3838">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -9,11 +9,12 @@
 	<fx:Style>
 		@namespace s "library://ns.adobe.com/flex/spark";
 		@namespace mx "library://ns.adobe.com/flex/mx";
-		
 	</fx:Style>
 	
 	<fx:Script>
 		<![CDATA[
+			import flash.system.Capabilities;
+			import dot.popUps.Help;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
@@ -21,9 +22,13 @@
 			
 			[Bindable]public var dataDG;
 			
+			[Bindable]
+			private var popHelp:Help;
+			
 			private function init()
 			{
 				dg.dataProvider = dataDG;
+				this.width = flash.system.Capabilities.screenResolutionX;
 			}
 			private function titleWindow_close():void 
 			{
@@ -52,20 +57,30 @@
 				{}
 			}
 			
+			public function launchHelp()
+			{
+				popHelp=PopUpManager.createPopUp(this, dot.popUps.Help, true) as dot.popUps.Help;
+				popHelp.closeButton.visible = false;
+				PopUpManager.centerPopUp(popHelp);
+				
+				endDiag();
+			}
 			
 		]]>
 	</fx:Script>
 	
 	
 	
-	<s:Button label="New Game" click="parentDocument.parentDocument.NewGame();titleWindow_close()" fontSize="14" toolTip="Start a New Game" x="86" y="20" width="127" height="38" color="#000000"/>
-	<s:Button id="statsBtn" label="Show Stats!" x="87" y="80" fontSize="14" width="127" height="38" click="stats.visible=true;statsBtn.visible=false;close.move(87,80)" color="#000000"/>
-	<s:Button id="close" label="Exit" click="titleWindow_close()" x="87" y="139" height="38" width="127" color="#000000"/>
+	<s:Button label="New Game" mouseDown="parentDocument.parentDocument.NewGame();titleWindow_close()" fontSize="14" toolTip="Start a New Game" x="86" y="20" width="130" height="40" color="#000000" horizontalCenter="0"/>
+	<s:Button id="statsBtn" label="Show Stats!" x="87" y="90" fontSize="14" width="130" height="40" mouseDown="stats.visible=true;statsBtn.visible=false;help.visible=false;close.move(close.x,80)" color="#000000" horizontalCenter="0"/>
+	<s:Button id="close" label="Exit" mouseDown="titleWindow_close()" x="87" y="160" height="45" width="130" color="#000000" horizontalCenter="0"/>
+	<s:Button id="help" click="launchHelp()" height="45" width="130" color="#000000" label="Help" x="569" y="240"/>
+	
 	<s:VGroup id="stats" width="100%" y="150" visible="false" height="167">
 	
 	<s:HGroup horizontalAlign="center" width="100%">
-		<s:Button label="Reset Stats" click="Reset();" y="65" x="6" width="94" height="32" color="0x000000"/>
-		<s:Button label="Hide Stats" click="stats.visible=false;statsBtn.visible=true;close.move(87,139)" height="32" width="94" x="180" color="0x000000"/>
+		<s:Button label="Reset Stats" mouseDown="Reset();" y="65" x="6" width="94" height="32" color="0x000000"/>
+		<s:Button label="Hide Stats" mouseDown="stats.visible=false;statsBtn.visible=true;help.visible=true;close.move(close.x,160)" height="32" width="94" x="180" color="0x000000"/>
 	</s:HGroup>	
 		
 	<mx:DataGrid id="dg" variableRowHeight="true" creationComplete="init()" headerHeight="40" wordWrap="true" width="100%" resizableColumns="false" sortableColumns="false" 

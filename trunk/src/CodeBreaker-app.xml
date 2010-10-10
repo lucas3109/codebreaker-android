@@ -43,6 +43,7 @@
 	<!-- <publisherID></publisherID> -->
 
 	<supportedProfiles>mobileDevice</supportedProfiles>
+	
 	<!-- Settings for the application's initial window. Required. -->
 	<initialWindow>
 		<content>CodeBreaker.swf</content>
