@@ -2,7 +2,7 @@
 
 /// DATABASE PART.......................................
 import flash.filesystem.File;
-var dbFile:File = File.applicationStorageDirectory.resolvePath("LiveScoresDB.db");
+var dbFile:File = File.applicationDirectory.resolvePath("LiveScoresDB.db");
 
 var dbTemplate:File = new File();
 private var conn:SQLConnection = new SQLConnection();
@@ -10,12 +10,13 @@ private var createStmt:SQLStatement = new SQLStatement();
 private var selectStmt:SQLStatement = new SQLStatement();
 private var insertStmt:SQLStatement = new SQLStatement();
 private var deleteStmt:SQLStatement = new SQLStatement();
+public var resultObj:Object;
 
 public function initDB()
 {
 	if (!dbFile.exists)
 	{
-		dbTemplate = File.applicationStorageDirectory.resolvePath("DBTemplate.db");
+		dbTemplate = File.applicationDirectory.resolvePath("DBTemplate.db");
 		dbTemplate.copyTo(dbFile);
 	}
 }
@@ -64,16 +65,16 @@ public function tables():void
 public function createError(event:SQLErrorEvent):void
 {
 	
-	Alert.show("An error occured....");
+	//Alert.show("An error occured....");
 }
 
 public function createResult(event:SQLEvent):void
 {}
 
 var datesArr = new Array();
-public var wins = 0;
-public var total = 0;
-public var loss = 0;
+public var wins_ = 0;
+public var total_ = 0;
+public var loss_ = 0;
 public var LastGameLost = false;
 public var dataDG;
 
@@ -99,18 +100,19 @@ public function nowShow()
 			selectStmt.execute();
 			result = selectStmt.getResult();
 		}
-		wins = result.data[0].score;
-		total = result.data[0].total;
-		loss = result.data[0].loss;
-		dataDG = result.data[0];
-		
+		wins_ = result.data[0].score;
+		total_ = result.data[0].total;
+		loss_ = result.data[0].loss;
+		var score_ = result.data[0].score;
+		//dataDG = result.data[0];
+		resultObj = {total:total_,loss:loss_,score:score_};
 		
 		var obj:Object;
 		
 	}
 	catch (error:SQLError)
 	{
-		Alert.show("no data for this month!");
+		//Alert.show("no data for this month!");
 	}
 }
 
@@ -128,7 +130,7 @@ public function saveScores()
 	var y = new Date().fullYear;
 	var date:Date = new Date();
 	var finalLost = getLoss();
-	var finalTotal = Number(this.total)+1;
+	var finalTotal = Number(this.total_)+1;
 	var finalWins = getWins();
 	insertStmt.parameters[":empId"] = 1000;
 	insertStmt.parameters[":month"] = date.getMonth();
@@ -151,7 +153,7 @@ public function saveScores()
 	}
 	catch (error:SQLError)
 	{
-		Alert.show((error.details).toString());
+		//Alert.show((error.details).toString());
 	}
 }
 
@@ -159,9 +161,9 @@ public function getLoss()
 {
 	var thisLoss;
 	if(LastGameLost==true)
-		thisLoss = Number(this.loss)+1;
+		thisLoss = Number(this.loss_)+1;
 	else
-		thisLoss = Number(loss);
+		thisLoss = Number(loss_);
 return thisLoss;
 }
 
@@ -169,9 +171,9 @@ public function getWins()
 {
 	var thisWins;
 	if(LastGameLost==true)
-		thisWins = Number(wins);
+		thisWins = Number(wins_);
 	else 
-		thisWins = Number(this.wins)+1;
+		thisWins = Number(this.wins_)+1;
 	return thisWins;
 }
 
@@ -203,15 +205,12 @@ public function initScores()
 	{
 		// execute the statement
 		insertStmt.execute();
-		
 		//Alert.show("All done!");
 		nowShow();
-		
-		
 	}
 	catch (error:SQLError)
 	{
-		Alert.show((error.details).toString());
+		//Alert.show((error.details).toString());
 	}
 }
 
@@ -242,7 +241,7 @@ public function deleteNow(flag=false):void
 		}
 		catch (error:SQLError)
 		{
-			Alert.show("no data!");
+			//Alert.show("no data!");
 		}
 	if(flag)
 		nowShow();
