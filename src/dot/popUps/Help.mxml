@@ -8,7 +8,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-				var STR = 'Place/Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n';
+				var STR = 'Drag 4 Colors on the board and try to guess the right combination the computer has.'+'\n'+'.Black dot means you have a right Color and in the right Position'+'\n'+'.White dot means you have a right Color but not in the correct Position'+'\n';
 			import mx.managers.PopUpManager;
 			private function titleWindow_close():void 
 			{
@@ -22,7 +22,7 @@
 		]]>
 	</fx:Script>
 	
-	<mx:Text selectable="false" text="{STR}" fontSize="18" fontWeight="bold" color="#FFFFFF" horizontalCenter="0" top="10" width="480" height="80%" paddingLeft="10" paddingRight="10"/>
+	<s:TextArea selectable="false" text="{STR}" fontSize="18" fontWeight="bold" color="#FFFFFF" horizontalCenter="0" top="10" width="480" height="80%" paddingLeft="10" paddingRight="10"/>
 	
 	<s:Button label="OK" height="40"  width="80"  bottom="10" horizontalCenter="0" fontWeight="bold" mouseDown="titleWindow_close()"/>
 </s:TitleWindow>
