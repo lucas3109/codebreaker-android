@@ -16,6 +16,9 @@
 			];
 			import mx.graphics.SolidColor;
 			import mx.graphics.Stroke;
+			import mx.managers.DragManager;
+			import mx.core.UIComponent;
+			import mx.core.IUIComponent;
 			
 			public var myUINT;
 			// Write String to labelDisplay component. 
@@ -124,11 +127,17 @@
 				parentDocument.parentDocument.addElem(evt)
 			}
 			
+			private function mouseDownHandler(e:MouseEvent):void {
+				DragManager.doDrag(e.currentTarget as IUIComponent, null, e);
+			}
+			
 		]]>
 	</fx:Script>
-	<s:HGroup  textAlign="center" verticalAlign="middle" height="70" horizontalAlign="center" width="100%" doubleClick="parentDocument.parentDocument.addElem(event,data)" doubleClickEnabled="true">
-		
-		<s:Ellipse id="bballs" height="50" width="50" />			
+	<s:HGroup  textAlign="center" verticalAlign="middle" height="70" horizontalAlign="center" width="100%" 
+			   doubleClick="parentDocument.parentDocument.addElem(event,data)" doubleClickEnabled="true" >
+		<s:Graphic width="50" height="50" mouseMove="mouseDownHandler(event)">
+			<s:Ellipse id="bballs" height="50" width="50" />	
+		</s:Graphic>		
 		<s:Label id="tag" visible="false" includeInLayout="false" text="{data}" creationComplete="coloring();buildColors(data);bballs.addEventListener(MouseEvent.DOUBLE_CLICK,doubleClicked);" 
 				 doubleClickEnabled="true" doubleClick="parentDocument.parentDocument.addElem(event)" toolTip="Drag/Double Click me into the Board..." fontSize="18" initialize="coloring()"/>
 	
