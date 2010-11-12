@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		currentState="normal" 
+		color.normal="#F3F1F1" contentBackgroundColor.normal="#F3F1F1"  destructionPolicy="none" viewActivate="realInit();nowShow();" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		s|Label
+		{
+			fontFamily:Comic Sans MS;
+			
+			
+		}
+	</fx:Style>
+	<fx:Script source="../dbActions/dbReset.as"/>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="newGame"/>
+		<s:State name="stats"/>
+	</s:states>
+	<fx:Script>
+		<![CDATA[
+			import dot.popUps.Help;
+			
+			import flash.system.Capabilities;
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import views.Utils;
+			
+			
+			[Bindable]
+			private var popHelp:Help;
+			
+			private function viewInit(evt:Event)
+			{
+				score.text = getDataColor({score:resultObj.score,total:resultObj.total});
+				success.text = resultObj.success;
+			}
+			
+			private function init()
+			{
+				//dg.dataProvider = dataDG;
+				this.width = flash.system.Capabilities.screenResolutionX;
+			}
+			
+			
+			
+			public function Reset()
+			{
+				//Alert.show("Are you sure you want to reset your stats?","Reset...",Alert.YES|Alert.NO,null,checkReset);
+			}
+			
+			public function checkReset(evt:Event)
+			{
+				//dg.addEventListener(FlexEvent.DATA_CHANGE,reset);
+			
+					deleteNow(true);
+					//dg.dataProvider=parentDocument.parentDocument.dataDG;
+				
+			}
+			
+			public function launchHelp()
+			{
+				popHelp=PopUpManager.createPopUp(this, dot.popUps.Help, true) as dot.popUps.Help;
+				popHelp.closeButton.visible = false;
+				PopUpManager.centerPopUp(popHelp);
+				
+				
+			}
+			
+			public function getDataColor(d)
+			{
+				if(Number(d.score)>=Number(d.total)/2)
+				{score.setStyle("color","#B1E001");}
+				else
+					score.setStyle("color","#ff0000");
+				
+				return d.score+"/"+d.total;
+			}
+			
+			var parentView = new MainHome;
+			
+		]]>
+	</fx:Script>
+	
+	<s:titleContent>
+		<s:Button icon="@Embed(source='../assets/back.png')" mouseDown="navigator.popView()"/>
+		<s:Label fontFamily="Comic Sans MS" text="Menu"
+				 width.newGame="100%" height.newGame="100%" color.newGame="#E3E3E3"
+				 paddingLeft.newGame="-80" textAlign.newGame="center" verticalAlign.newGame="middle"
+				 width.normal="100%" height.normal="100%" color.normal="#E3E3E3"
+				 paddingLeft.normal="-80" textAlign.normal="center" verticalAlign.normal="middle"
+				 width.stats="100%" height.stats="100%" color.stats="#E3E3E3"
+				 paddingLeft.stats="-80" textAlign.stats="center" verticalAlign.stats="middle"/>
+	</s:titleContent>
+	<s:VGroup width.newGame="100%" gap.newGame="25" horizontalAlign.newGame="center"
+			  paddingTop.newGame="10"
+			  width.normal="100%" gap.normal="25" horizontalAlign.normal="center"
+			  paddingTop.normal="10" verticalAlign.normal="middle"
+			  width.stats="100%" gap.stats="25" horizontalAlign.stats="center" paddingTop.stats="10"
+			  verticalAlign.stats="middle">
+		
+	
+	<s:Button x="86" y="20" label="New Game" color="#000000" horizontalCenter="-1"
+			  mouseDown="currentState = 'newGame';"
+			  toolTip="Start a New Game"
+			  color.newGame="#E3E3E3"
+			  color.normal="#E3E3E3"
+			  visible.stats="false" color.stats="#E3E3E3" includeInLayout.stats="false"/>
+		<s:HGroup includeIn="newGame" width="100%" height="115" gap="60" horizontalAlign="center"
+				  verticalAlign="middle">
+			<s:Button label="Yes :)" chromeColor="#96CE00" color="#252524" mouseDown="parentView.NewGame();Utils.newGameIndicator=true;navigator.popView();"/>
+			<s:Button label="No :(" chromeColor="#D70303" color="#252524" mouseDown="currentState='normal'"/>
+		</s:HGroup>
+		<s:Button id="statsBtn" label="Show Stats!" color="#000000" horizontalCenter="-1"
+				  mouseDown="currentState='stats'"
+				  visible.newGame="false" y.newGame="80" color.newGame="#E3E3E3"
+				  color.normal="#E3E3E3"
+				  y.stats="80" color.stats="#E3E3E3"/>
+		<s:HGroup width="100%" horizontalAlign="center"
+				  visible.newGame="false" includeInLayout.newGame="false"
+				  visible.normal="false" includeInLayout.normal="false"
+				  gap.stats="60">
+			<s:Button id="resetBtn" label="Reset Stats" color="0x000000"
+					  mouseDown="checkReset(event);"
+					  x.newGame="6" y.newGame="65" width.newGame="94" height.newGame="32"
+					  x.normal="6" y.normal="65"
+					  color.stats="#e3e3e3"/>
+			<s:Button x="180" label="Hide Stats" color="0x000000" mouseDown="currentState='normal'"
+					  width.newGame="94" height.newGame="32"
+					  visible.normal="false" width.normal="94" height.normal="32"
+					  includeInLayout.normal="false"
+					  color.stats="#E3E3E3"/>
+		</s:HGroup>
+	<s:Button id="help" x="569" y="140" label="Help" click="launchHelp()" color="#000000"
+			  horizontalCenter="-1"
+			  visible.newGame="false" color.newGame="#E3E3E3"
+			  color.normal="#E3E3E3"
+			  visible.stats="false" color.stats="#E3E3E3"/>
+	</s:VGroup>
+	<s:VGroup id="stats" visible="false" width="100%" height="167"
+			  y.newGame="150"
+			  y.normal="150"
+			  visible.stats="true" gap.stats="20" horizontalAlign.stats="center"
+			  horizontalCenter.stats="0" verticalCenter.stats="-40">
+		<s:Label includeIn="stats" width="100%" text="Win % :" textAlign="center" fontFamily="Comic Sans MS"/>
+		<s:Label id="success" includeIn="stats" text="{resultObj.success}" color="#e3e3e3" fontFamily="Comic Sans MS"/>
+		<s:Label includeIn="stats" width="100%" text="Games Won: " textAlign="center" fontFamily="Comic Sans MS"/>
+		<s:Label id="score" includeIn="stats" text="{getDataColor({score:resultObj.score,total:resultObj.total})}" fontFamily="Comic Sans MS"/>
+		
+		<!--<s:DataGrid id="dg" variableRowHeight="true" creationComplete="init()" width="100%" 
+		toolTip="Scores"  enabled="true" borderAlpha="0.0" color="#000000">
+		<s:columns>		
+		<s:ArrayList>
+		<s:GridColumn headerText="Win %" dataField="success" width="30" />
+		<s:GridColumn id="gw" headerText="Games Won">
+		<s:itemRenderer>
+		<fx:Component>
+		<s:TextArea text="{data.score+'/'+data.total}" fontSize="11" fontWeight="bold" color="#000000" creationComplete="textColoring()">
+		<fx:Script>
+		<![CDATA[
+		
+		public function textColoring()
+		{
+		if(Number(data.score)>=Number(data.total)/2)
+		parentDocument.gw.setStyle("color","#B1E001");
+		else
+		parentDocument.gw.setStyle("color","#ff0000")
+		}
+		]]>
+		</fx:Script>
+		
+		</s:TextArea>
+		</fx:Component>
+		</s:itemRenderer>
+		</s:GridColumn>
+		
+		</s:ArrayList>
+		</s:columns>
+		</s:DataGrid>
+		-->
+	</s:VGroup>
+	
+	
+</s:View>
